@@ -1,6 +1,18 @@
 
 let operation = new Operation();
 
+setTimeout(() => {
+
+    operation.PopulatePurpose($("#selectPurpose"));
+    operation.PopulateMachine($("#selectMachineCode"));
+}, 500);
+
+
+$("#btnRefresh").click(function(){
+
+    window.location.reload();
+    
+});
 $("#btnScanMachineCodeQR").click(function(){
     
     screen.orientation.lock('portrait');
@@ -11,10 +23,14 @@ $("#btnScanMachineCodeQR").click(function(){
 
             // alert(scanResult);
             let isValid = operation.CheckMachineCodeQR(scanResult);
+            let user = $("#txtUser").val();
 
             if(isValid == true){
                 
+                $("#txtDisplayMachineCode").val(scanResult);
                 $("#txtMachineCode").val(scanResult);
+
+                checkMachineLogs(scanResult, user)
             } else if(isValid == false){
 
                 Swal.fire({
@@ -54,9 +70,13 @@ $("#btnScanUserQR").click(function(){
 
             // alert(scanResult);
             let isValid = operation.CheckUserQR(scanResult);
+            let machineCode = $("#txtMachineCode").val();
 
             if(isValid == true){
                 $("#txtUser").val(scanResult)
+                $("#txtDisplayUser").val(scanResult + " - " + main.SetEmployeeName(scanResult));
+
+                checkMachineLogs(machineCode, scanResult)
             } else if(isValid == false){
 
                 Swal.fire({
@@ -86,34 +106,119 @@ $("#btnScanUserQR").click(function(){
     );
 });
 
-$("#btnRefresh").click(function(){
+function checkMachineLogs(machineCode, user){
 
-    window.location.reload();
+    if(machineCode != "" && user != ""){
+
+        operation.machineCode = machineCode;
+        operation.user = user;
+
+        operation.CheckMachineLogs(operation, function(response){
+            // alert(JSON.stringify(response));
+            let status = response.status;
+            let rid = response.rid;
+
+            if(status == "IN"){
+
+                $("#btnIn").show();
+                $("#btnOut").hide();
+            } else if(status == "OUT"){
+
+                $("#btnOut").show();
+                $("#btnIn").hide();
+            } else{
+
+                $("#btnOut").hide();
+                $("#btnIn").hide();
+            }
+
+            $("#hiddenRID").val(rid);
+            
+        })
+
+    }
+}
+
+$("#btnIn").click(function(){
+    let machine = $("#txtMachineCode").val();
+    let user = $("#txtUser").val();
+    let purpose = $("#selectPurpose").val();
+
+    operation.machine = machine;
+    operation.user = user;
+    operation.purpose = purpose;
+
+    operation.InMachineLog(operation, function(response){
+
+        if(response == true){
+            clearForm();
+        }
+
+    });
     
 });
 
+$("#btnOut").click(function(){
+    let rid = $("#hiddenRID").val();
+    let user = $("#txtUser").val();
+
+    operation.rid = rid;
+    operation.user = user;
+
+    operation.OutMachineLog(operation);
+    clearForm();
+});
+
+$("#btnMachineCodeChangeToSelect").click(function(){
+
+    $(this).hide();
+    $("#selectMachineCode").show();
+    $("#btnMachineCodeChangeToScan").show();
+    $("#txtDisplayMachineCode").hide();
+    $("#btnScanMachineCodeQR").hide();
+    operation.PopulateMachine($("#selectMachineCode"));
+    $("#txtMachineCode").val("");
 
 
+});
+$("#btnMachineCodeChangeToScan").click(function(){
 
-/* 
-$("#btnScan").click(function(){
-    scanBarcode();
+    $(this).hide();
+    $("#btnMachineCodeChangeToSelect").show();
+    $("#txtDisplayMachineCode").show();
+    $("#selectMachineCode").hide();
+    $("#btnScanMachineCodeQR").show();
+    $("#txtMachineCode").val("");
+
+});
+$("#selectMachineCode").change(function(){
+    let value = $(this).val();
+
+    $("#txtMachineCode").val(value);
+
 })
 
-function scanBarcode() {
-    cordova.plugins.barcodeScanner.scan(
-        function(result) {
-            
-            
+$("#btnClear").click(function(){
 
-        },
-        function(error) {
-            alert("Scanning failed: " + error);
-        }
-    );
+    clearForm();
+});
+
+
+function clearForm(){
+
+    $("#btnIn").hide();
+    $("#btnOut").hide();
+    $("#txtDisplayUser").val("");
+    $("#txtUser").val("");
+    $("#txtMachineCode").val("");
+    $("#txtDisplayMachineCode").val("");
+    $("#selectPurpose").val("");
+    $("#hiddenRID").val();
+    operation.PopulateMachine($("#selectMachineCode"));
+
 }
 
- */
+
 
 
 

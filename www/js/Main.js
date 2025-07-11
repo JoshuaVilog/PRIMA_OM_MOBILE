@@ -68,7 +68,18 @@ class Main {
     }
 
 
-    
+
+    SetEmployeeName(id){
+        let list = JSON.parse(localStorage.getItem(this.lsEmployeeList));
+        
+        if(id == 1){
+            return "SYSTEM ADMIN"
+        } else {
+            let result = list.find(element => element.RFID === id);
+
+            return result ? result.EMPLOYEE_NAME: "";
+        }
+    }
 }
 
 let main = new Main();
