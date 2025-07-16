@@ -29,6 +29,20 @@
         <!-- Sweet Alert 2 -->
         <link rel="stylesheet" href="assets/sweetalert/dist/sweetalert2.min.css">
         <script src="assets/sweetalert/dist/sweetalert2.min.js"></script>
+
+        <style>
+            .fixed-bottom-button {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 999;
+                padding: 10px 15px;
+                background-color: #fff;
+                border-top: 1px solid #ddd;
+                box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            }
+        </style>
     </head>
     <body class="no-skin">
         <div class="main-container ace-save-state" id="main-container">
@@ -42,61 +56,126 @@
                         <!-- <div class="page-header">
                             <h5 class="text-center">Operation Management System</h5>
                         </div> -->
-                        <h5 class="header smaller lighter dark"><strong>Operation Management System</strong></h5>
+                        <h5 class="header center text-primary"><strong>Operation Management System</strong></h5>
 
-                        <button class="btn btn-minier btn-success" id="btnRefresh">
-                            <i class="ace-icon fa fa-refresh"></i>
-                            <!-- <span class="bigger-110 no-text-shadow">Refresh Page</span> -->
-                        </button>
+                        <div style="float:right;">
+                            <button class="btn btn-minier btn-primary" id="btnRefresh">
+                                <i class="ace-icon fa fa-refresh"></i>
+                                <!-- <span class="bigger-110 no-text-shadow">Refresh</span> -->
+                            </button>
+                            <button class="btn btn-minier btn-success" id="btnOpenModalConnection">
+                                <i class="ace-icon fa fa-signal icon-only"></i>
+                                <!-- <span class="bigger-110 no-text-shadow">Test Connection</span> -->
+                            </button>
+                        </div>
+                        
                         <br>
                         <br>
-                        <div class="form-group has-info">
-                            <label for="">
-                                <strong>MACHINE CODE:</strong>
-                            </label>
-                            <div class="input-group">
-                                <input type="text" class="form-control disabled border-dark" id="txtDisplayMachineCode" placeholder="Scan QR/ Select">
-                                <select id="selectMachineCode" class="form-control"  style="display:none;"></select>
-                                <div class="input-group-btn">
-                                    <button class="btn btn-success btn-sm" id="btnScanMachineCodeQR">
-                                        <i class="glyphicon glyphicon-qrcode"></i>
-                                    </button>
+                        <ul class="nav nav-tabs ">
+                            <li class="active"><a data-toggle="tab" href="#menu1">SCAN IN/OUT</a></li>
+                            <li><a data-toggle="tab" href="#menu2" id="liViewHistoryLogs">VIEW HISTORY LOGS</a></li>
+                        </ul>
 
-                                    <button class="btn btn-info btn-sm" id="btnMachineCodeChangeToSelect">
-                                        <i class="ace-icon fa fa-refresh"></i>
-                                    </button>
-                                    <button class="btn btn-primary btn-sm" id="btnMachineCodeChangeToScan" style="display:none;">
-                                        <i class="ace-icon fa fa-refresh"></i>
-                                    </button>
+                        <div class="tab-content">
+                            <div id="menu1" class="tab-pane fade in active">
+                                <div style="min-height: 500px">
+                                    <div class="form-group has-info">
+                                        <label for="">
+                                            <strong>MACHINE CODE:</strong>
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control disabled border-dark" id="txtDisplayMachineCode" placeholder="Scan QR/ Select">
+                                            <select id="selectMachineCode" class="form-control"  style="display:none;"></select>
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-success btn-sm" id="btnScanMachineCodeQR">
+                                                    <i class="glyphicon glyphicon-qrcode"></i>
+                                                </button>
+    
+                                                <button class="btn btn-info btn-sm" id="btnMachineCodeChangeToSelect">
+                                                    <i class="ace-icon fa fa-refresh"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" id="btnMachineCodeChangeToScan" style="display:none;">
+                                                    <i class="ace-icon fa fa-refresh"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="txtMachineCode">
+                                    </div>
+                                    <div class="form-group has-info">
+                                        <label for="">
+                                            <strong>USER:</strong>
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control disabled border-dark" id="txtDisplayUser" placeholder="Scan QR">
+                                            <div class="input-group-btn">
+                                            <button class="btn btn-info btn-sm" id="btnScanUserQR">
+                                                <i class="glyphicon glyphicon-qrcode"></i>
+                                            </button>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="txtUser">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">
+                                            <strong>PURPOSE:</strong>
+                                        </label>
+                                        <select id="selectPurpose" class="form-control"></select>
+                                    </div>
+                                    <input type="hidden" id="hiddenRID">
+                                    <hr>
+                                </div>
+
+                                <div class="fixed-bottom-button">
+                                    <button id="btnIn" class="btn-block btn-success" style="display: none;">IN</button>
+                                    <button id="btnOut" class="btn-block btn-danger" style="display: none;">OUT</button>
+                                    <button id="btnClear" class="btn-block btn-default" >CLEAR</button>
                                 </div>
                             </div>
-                            <input type="hidden" id="txtMachineCode">
-                        </div>
-                        <div class="form-group has-info">
-                            <label for="">
-                                <strong>USER:</strong>
-                            </label>
-                            <div class="input-group">
-                                <input type="text" class="form-control disabled border-dark" id="txtDisplayUser" placeholder="Scan QR">
-                                <div class="input-group-btn">
-                                  <button class="btn btn-info btn-sm" id="btnScanUserQR">
-                                    <i class="glyphicon glyphicon-qrcode"></i>
-                                  </button>
+
+                            <div id="menu2" class="tab-pane fade">
+                                <h3 class="header smaller lighter dark"><strong>View History Logs</strong></h3>
+                                <div class="form-group has-info">
+                                    <label for="">
+                                        <strong>USER:</strong>
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control disabled border-dark" id="txtDisplayUser2" placeholder="Scan QR">
+                                        <div class="input-group-btn">
+                                        <button class="btn btn-info btn-sm" id="btnScanUserQR2">
+                                            <i class="glyphicon glyphicon-qrcode"></i>
+                                        </button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="txtUser2">
                                 </div>
+                                <div id="table-history-logs"></div>
                             </div>
-                            <input type="hidden" id="txtUser">
                         </div>
-                        <div class="form-group">
-                            <label for="">
-                                <strong>PURPOSE:</strong>
-                            </label>
-                            <select id="selectPurpose" class="form-control"></select>
-                        </div>
-                        <input type="hidden" id="hiddenRID">
-                        <hr>
-                        <button id="btnIn" class="btn-block btn-success" style="display: none;">IN</button>
-                        <button id="btnOut" class="btn-block btn-danger" style="display: none;">OUT</button>
-                        <button id="btnClear" class="btn-block btn-default" >CLEAR</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL -->
+        <div id="modalConnection" class="modal fade">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Connection Status</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            <h5>IP ADDRESS: <strong id="displayIP"></strong></h5>
+                        </p>
+                        <p>
+                            <h5>STATUS: <strong id="displayConnectionStatus">ERROR CONNECTION</strong></h5>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-xs" id="btnCheckConnection">Check Connection</button>
+                        <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

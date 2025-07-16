@@ -7,6 +7,10 @@ setTimeout(() => {
     operation.PopulateMachine($("#selectMachineCode"));
 }, 500);
 
+document.addEventListener('deviceready', function () {
+
+    main.CheckUpdate();
+}, false);
 
 $("#btnRefresh").click(function(){
 
@@ -38,6 +42,11 @@ $("#btnScanMachineCodeQR").click(function(){
                     text: 'Please scan the correct code',
                     icon: 'warning'
                 })
+
+                $("#txtDisplayMachineCode").val("");
+                $("#txtMachineCode").val("");
+                $("#btnOut").hide();
+                $("#btnIn").hide();
             }
 
         },
@@ -84,6 +93,11 @@ $("#btnScanUserQR").click(function(){
                     text: 'Please scan the correct code',
                     icon: 'warning'
                 })
+
+                $("#txtUser").val("")
+                $("#txtDisplayUser").val("");
+                $("#btnOut").hide();
+                $("#btnIn").hide();
             }
 
         },
@@ -130,6 +144,10 @@ function checkMachineLogs(machineCode, user){
 
                 $("#btnOut").hide();
                 $("#btnIn").hide();
+                $("#txtUser").val("")
+                $("#txtDisplayUser").val("");
+                $("#txtDisplayMachineCode").val("");
+                $("#txtMachineCode").val("");
             }
 
             $("#hiddenRID").val(rid);
@@ -219,9 +237,83 @@ function clearForm(){
 }
 
 
+$("#btnScanUserQR2").click(function(){
+    
+    screen.orientation.lock('portrait');
+
+    cordova.plugins.barcodeScanner.scan(
+        function (result) {
+            let scanResult = result.text;
+
+            // alert(scanResult);
+            let isValid = operation.CheckUserQR(scanResult);
+
+            if(isValid == true){
+                $("#txtUser2").val(scanResult)
+                $("#txtDisplayUser2").val(scanResult + " - " + main.SetEmployeeName(scanResult));
+
+                operation.DisplayMachineLogsRecordsByUser("#table-history-logs", scanResult)
+            } else if(isValid == false){
+
+                Swal.fire({
+                    title: 'Invalid QR Code',
+                    text: 'Please scan the correct code',
+                    icon: 'warning'
+                })
+            }
+
+        },
+        function (error) {
+            alert("Scanning failed: " + error);
+        },
+        {
+            preferFrontCamera : false, // iOS and Android
+            showFlipCameraButton : true, // iOS and Android
+            showTorchButton : true, // iOS and Android
+            torchOn: false, // Android, launch with the torch switched on (if available)
+            saveHistory: false, // Android, save scan history (default false)
+            prompt : "Place a QR CODE inside the scan area", // Android
+            resultDisplayDuration: 0, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+            formats : "QR_CODE", // default: all but PDF_417 and RSS_EXPANDED
+            orientation : "portrait", // Android only (portrait|landscape), default unset so it rotates with the device
+            disableAnimations : true, // iOS
+            disableSuccessBeep: true // iOS and Android
+        }
+    );
+});
+
+$("#liViewHistoryLogs").click(function(){
+
+    operation.EmptyHistoryLogs();
+    $("#table-history-logs").empty();
+    $("#txtUser2").val("")
+    $("#txtDisplayUser2").val("");
+
+});
 
 
+$("#btnOpenModalConnection").click(function(){
+    main.CheckConnection(function(response){
 
+        $("#modalConnection").modal("show");
+        $("#displayConnectionStatus").html(response);
+        $("#displayIP").text(main.SetIP());
+    })
+});
+
+$("#btnCheckConnection").click(function(){
+
+    $("#displayConnectionStatus").html("-");
+    $("#displayIP").html("-");
+
+    setTimeout(() => {
+        main.CheckConnection(function(response){
+
+            $("#displayConnectionStatus").html(response);
+            $("#displayIP").text(main.SetIP());
+        })
+    }, 1000);
+});
 
 
 

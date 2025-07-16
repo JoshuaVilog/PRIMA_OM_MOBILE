@@ -1,7 +1,8 @@
 class Main {
 
     constructor(){
-        this.systemIP = "http://172.16.102.15:8080/";
+        // this.systemIP = "http://172.16.102.15:8080/";
+        this.systemIP = "http://172.16.1.13:8000/";
         this.systemLocalStorageTitle = "om";
         this.root = this.systemIP+"1_OM/";
         this.lsMachineList = this.systemLocalStorageTitle +"-machine-list";
@@ -32,7 +33,7 @@ class Main {
     GetEmployeeRecords(){
         let self = this;
         $.ajax({
-            url: self.root + "php/controllers/Allocation/EmployeeRecords.php",
+            url: self.root + "php/controllers/Employee/EmployeeRecords.php",
             method: "POST",
             data: {},
             datatype: "json",
@@ -67,8 +68,6 @@ class Main {
         });
     }
 
-
-
     SetEmployeeName(id){
         let list = JSON.parse(localStorage.getItem(this.lsEmployeeList));
         
@@ -80,6 +79,46 @@ class Main {
             return result ? result.EMPLOYEE_NAME: "";
         }
     }
+    SetPurpose(id){
+        let list = JSON.parse(localStorage.getItem(this.lsPurposeList));
+        let result = list.find(element => element.RID === id);
+            
+        return result ? result.PURPOSE_DESC: "";
+    }
+
+    CheckUpdate(){
+        console.log("Device is ready");
+        // var updateUrl = "http://172.16.1.13:8000/updates/TMS_UPDATE/version.xml";
+        var updateUrl = this.systemIP+"updates/OM_UPDATE/version.xml";
+
+        window.AppUpdate.checkAppUpdate(onSuccess, onFail, updateUrl);
+
+        function onFail(error) {
+            console.log("App update check failed:", error);
+        }
+        function onSuccess(response) {
+        console.log("App update check successful");
+        }
+    }
+    CheckConnection(callback){
+        let self = this;
+        $.ajax({
+            url: self.root+'/config/connectionTest.php',
+            type: 'POST',
+            data:{},
+            success: function(response) {
+
+                callback('<span class="text-success">'+response+'</span>');
+    
+            },
+            error: function(response){
+                callback('<span class="text-danger">ERROR CONNECTION</span>');
+            },
+        });
+    }
+    SetIP(){
+        return this.systemIP;
+    }
 }
 
 let main = new Main();
@@ -87,3 +126,9 @@ let main = new Main();
 main.GetMachineList();
 main.GetEmployeeRecords();
 main.GetPurposeRecords();
+
+
+
+document.addEventListener('deviceready', function () {
+    main.CheckUpdate();
+}, false);

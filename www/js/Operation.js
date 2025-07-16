@@ -2,6 +2,7 @@ class Operation extends Main {
 
     constructor(){
         super()
+        this.tableHistoryLogs = null;
     }
 
     CheckMachineCodeQR(qr){
@@ -53,7 +54,7 @@ class Operation extends Main {
         let self = this;
 
         $.ajax({
-            url: self.root + "php/controllers/Machine/CheckMachineLogs.php",
+            url: self.root + "php/controllers/Machine/CheckMachineLog.php",
             method: "POST",
             data: {
                 machine: operation.machineCode,
@@ -66,6 +67,7 @@ class Operation extends Main {
             },
             error: function(err){
                 console.log("Error:"+JSON.stringify(err));
+                callback({rid: 0, status: ""})
                 alert("Access Denied: You are not connected to the company Wi-Fi.");
             },
         });
@@ -155,6 +157,81 @@ class Operation extends Main {
         });
     }
 
+    DisplayMachineLogsRecordsByUser(tableElem, user){
+        let self = this;
 
+        $.ajax({
+            url: self.root + "php/controllers/Machine/DisplayMachineLogsRecordsByUser.php",
+            method: "POST",
+            data: {
+                user: user
+            },
+            datatype: "json",
+            success: function(response){
+                console.log(response);
+
+                let newData = response.data.map(function(value){
+                    return {
+                        "RID": value['RID'],
+                        "MACHINE_CODE": value['MACHINE_CODE'],
+                        "IN_DATETIME": value['IN_DATETIME'],
+                        "OUT_DATETIME": (value['OUT_DATETIME'] != null) ? value['OUT_DATETIME'] : "",
+                        "IN_BY": main.SetEmployeeName(value['IN_BY']),
+                        "OUT_BY": main.SetEmployeeName(value['OUT_BY']),
+                        "PURPOSE": main.SetPurpose(value['PURPOSE']),
+                        "STATUS": (value['OUT_DATETIME'] == null) ? "ON-GOING":"DONE",
+                    }
+                });
+
+                self.tableHistoryLogs = new Tabulator(tableElem, {
+                    data: newData,
+                    pagination: "local",
+                    paginationSize: 50,
+                    paginationSizeSelector: [ 50, 100, 150],
+                    page: 1,
+                    ajaxURL: "your_data_endpoint_here.json",
+                    layout: "fitDataFill",
+                    groupBy: function(data){
+    
+                        return data.STATUS
+                    },
+                    groupValues:[
+                        ["ON-GOING","DONE"]
+                    ],
+                    columns: [
+                        {title: "ID", field: "RID", headerFilter: "input", visible: false, },
+                        {title: "MACHINE", field: "MACHINE_CODE",  headerFilter: "input", resizable: false, },
+                        {title: "PURPOSE", field: "PURPOSE",  headerFilter: "input", resizable: false,},
+                        {title: "TIME IN", field: "IN_DATETIME", headerFilter: "input", resizable: false,},
+                        {title: "TIME OUT", field: "OUT_DATETIME", headerFilter: "input", resizable: false,},
+                        {title: "IN", field: "IN_BY",  headerFilter: "input", resizable: false, formatter: function(cell){
+                            let value = cell.getValue();
+                            
+                            return (value != "") ? value : "-";
+                        }, },
+                        
+                        {title: "OUT", field: "OUT_BY", headerFilter: "input", resizable: false, formatter: function(cell){
+                            let value = cell.getValue();
+                            
+                            return (value != "") ? value : "-";
+                        }, },
+                        
+                        // {title: "ACTION", field:"RID", width: 300, hozAlign: "left", frozen: true, headerSort: false, frozen:true, visible: false, formatter:function(cell){}},
+                    ],
+                });
+    
+
+                
+            },
+            error: function(err){
+                console.log("Error:"+JSON.stringify(err));
+                alert("Access Denied: You are not connected to the company Wi-Fi.");
+            },
+        });
+    }
+    EmptyHistoryLogs(){
+
+        this.tableHistoryLogs.clearData();
+    }
 }
 
