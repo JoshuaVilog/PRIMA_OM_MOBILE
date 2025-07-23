@@ -25,7 +25,7 @@ $("#btnScanMachineCodeQR").click(function(){
         function (result) {
             let scanResult = result.text;
 
-            // alert(scanResult);
+            console.log(scanResult);
             let isValid = operation.CheckMachineCodeQR(scanResult);
             let user = $("#txtUser").val();
 
@@ -77,7 +77,7 @@ $("#btnScanUserQR").click(function(){
         function (result) {
             let scanResult = result.text;
 
-            // alert(scanResult);
+            console.log(scanResult);
             let isValid = operation.CheckUserQR(scanResult);
             let machineCode = $("#txtMachineCode").val();
 
@@ -131,6 +131,10 @@ function checkMachineLogs(machineCode, user){
             // alert(JSON.stringify(response));
             let status = response.status;
             let rid = response.rid;
+            let purpose = response.purpose;
+            let remarks = response.remarks;
+
+            console.log(response);
 
             if(status == "IN"){
 
@@ -150,6 +154,8 @@ function checkMachineLogs(machineCode, user){
                 $("#txtMachineCode").val("");
             }
 
+            operation.PopulatePurpose($("#selectPurpose"), purpose);
+            $("#txtRemarks").val(remarks);
             $("#hiddenRID").val(rid);
             
         })
@@ -161,10 +167,12 @@ $("#btnIn").click(function(){
     let machine = $("#txtMachineCode").val();
     let user = $("#txtUser").val();
     let purpose = $("#selectPurpose").val();
+    let remarks = $("#txtRemarks").val();
 
     operation.machine = machine;
     operation.user = user;
     operation.purpose = purpose;
+    operation.remarks = remarks;
 
     operation.InMachineLog(operation, function(response){
 
@@ -173,15 +181,16 @@ $("#btnIn").click(function(){
         }
 
     });
-    
 });
 
 $("#btnOut").click(function(){
     let rid = $("#hiddenRID").val();
     let user = $("#txtUser").val();
+    let remarks = $("#txtRemarks").val();
 
     operation.rid = rid;
     operation.user = user;
+    operation.remarks = remarks;
 
     operation.OutMachineLog(operation);
     clearForm();
@@ -231,7 +240,8 @@ function clearForm(){
     $("#txtMachineCode").val("");
     $("#txtDisplayMachineCode").val("");
     $("#selectPurpose").val("");
-    $("#hiddenRID").val();
+    $("#hiddenRID").val("");
+    $("#txtRemarks").val("");
     operation.PopulateMachine($("#selectMachineCode"));
 
 }
@@ -251,6 +261,7 @@ $("#btnScanUserQR2").click(function(){
             if(isValid == true){
                 $("#txtUser2").val(scanResult)
                 $("#txtDisplayUser2").val(scanResult + " - " + main.SetEmployeeName(scanResult));
+                $("#spinner").show();
 
                 operation.DisplayMachineLogsRecordsByUser("#table-history-logs", scanResult)
             } else if(isValid == false){

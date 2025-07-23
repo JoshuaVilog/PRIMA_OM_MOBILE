@@ -27,7 +27,7 @@ class Operation extends Main {
             if(id != undefined && list[index].RID == id){
                 selected = "selected";
             }
-            options += '<option value="'+list[index].RID+'">'+list[index].PURPOSE_DESC+'</option>';
+            options += '<option value="'+list[index].RID+'" '+selected+'>'+list[index].PURPOSE_DESC+'</option>';
 
         }
 
@@ -91,6 +91,7 @@ class Operation extends Main {
                     machine: operation.machine,
                     user: operation.user,
                     purpose: operation.purpose,
+                    remarks: operation.remarks,
                 },
                 datatype: "json",
                 success: function(response){
@@ -131,6 +132,7 @@ class Operation extends Main {
             data: {
                 user: operation.user,
                 rid: operation.rid,
+                remarks: operation.remarks,
             },
             datatype: "json",
             success: function(response){
@@ -220,7 +222,7 @@ class Operation extends Main {
                     ],
                 });
     
-
+                $("#spinner").hide();
                 
             },
             error: function(err){

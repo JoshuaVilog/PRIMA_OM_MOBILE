@@ -1,8 +1,8 @@
 class Main {
 
     constructor(){
-        // this.systemIP = "http://172.16.102.15:8080/";
-        this.systemIP = "http://172.16.1.13:8000/";
+        this.systemIP = "http://172.16.102.15:8080/";
+        // this.systemIP = "http://172.16.1.13:8000/";
         this.systemLocalStorageTitle = "om";
         this.root = this.systemIP+"1_OM/";
         this.lsMachineList = this.systemLocalStorageTitle +"-machine-list";
