@@ -5,6 +5,7 @@ class Main {
         this.systemIP = "http://172.16.1.13:8000/";
         this.systemLocalStorageTitle = "om";
         this.root = this.systemIP+"1_OM/";
+        this.lsUser = this.systemLocalStorageTitle +"-user";
         this.lsMachineList = this.systemLocalStorageTitle +"-machine-list";
         this.lsEmployeeList = this.systemLocalStorageTitle +"-employee-list";
         this.lsPurposeList = this.systemLocalStorageTitle +"-purpose-list";
@@ -67,7 +68,47 @@ class Main {
             },
         });
     }
+    LoginUser(rfid){
+        let list = JSON.parse(localStorage.getItem(this.lsEmployeeList));
+        let result = list.find(element => element.RFID === rfid);
+        
+        if(result){
+            localStorage.setItem(this.lsUser, JSON.stringify(result));
+            return true;
+        } else {
+            return false;
+        }
+    }
+    CheckLoginUser(){
+        let user = localStorage.getItem(this.lsUser);
+        if(user){
+            return JSON.parse(user);
+        } else {
+            return null;
+        }
+    }
+    LogOutUser(){
+        localStorage.removeItem(this.lsUser);
+        // location.assign("login.html");
+        return true;
+    }
 
+    SetLoginName(){
+        let user = this.CheckLoginUser();
+        if(user){
+            return user.EMPLOYEE_NAME;
+        } else {
+            return "";
+        }
+    }
+    SetLoginRFID(){
+        let user = this.CheckLoginUser();
+        if(user){
+            return user.RFID;
+        } else {
+            return "";
+        }
+    }
     SetEmployeeName(id){
         let list = JSON.parse(localStorage.getItem(this.lsEmployeeList));
         
@@ -127,8 +168,8 @@ main.GetMachineList();
 main.GetEmployeeRecords();
 main.GetPurposeRecords();
 
-
-
 document.addEventListener('deviceready', function () {
     main.CheckUpdate();
 }, false);
+
+

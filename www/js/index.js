@@ -12,6 +12,9 @@ document.addEventListener('deviceready', function () {
     main.CheckUpdate();
 }, false);
 
+$("#displayLoginName").text(main.SetLoginName());
+$("#txtUser").val(main.SetLoginRFID());
+
 $("#btnRefresh").click(function(){
 
     window.location.reload();
@@ -94,7 +97,7 @@ $("#btnScanUserQR").click(function(){
                     icon: 'warning'
                 })
 
-                $("#txtUser").val("")
+                // $("#txtUser").val("")
                 $("#txtDisplayUser").val("");
                 $("#btnOut").hide();
                 $("#btnIn").hide();
@@ -148,7 +151,7 @@ function checkMachineLogs(machineCode, user){
 
                 $("#btnOut").hide();
                 $("#btnIn").hide();
-                $("#txtUser").val("")
+                // $("#txtUser").val("")
                 $("#txtDisplayUser").val("");
                 $("#txtDisplayMachineCode").val("");
                 $("#txtMachineCode").val("");
@@ -221,7 +224,30 @@ $("#btnMachineCodeChangeToScan").click(function(){
 $("#selectMachineCode").change(function(){
     let value = $(this).val();
 
-    $("#txtMachineCode").val(value);
+    // $("#txtMachineCode").val(value);
+
+    let isValid = operation.CheckMachineCodeQR(value);
+    let user = $("#txtUser").val();
+
+    if(isValid == true){
+        
+        $("#txtDisplayMachineCode").val(value);
+        $("#txtMachineCode").val(value);
+
+        checkMachineLogs(value, user)
+    } else if(isValid == false){
+
+        Swal.fire({
+            title: 'Invalid QR Code',
+            text: 'Please scan the correct code',
+            icon: 'warning'
+        })
+
+        $("#txtDisplayMachineCode").val("");
+        $("#txtMachineCode").val("");
+        $("#btnOut").hide();
+        $("#btnIn").hide();
+    }
 
 })
 
@@ -236,7 +262,7 @@ function clearForm(){
     $("#btnIn").hide();
     $("#btnOut").hide();
     $("#txtDisplayUser").val("");
-    $("#txtUser").val("");
+    // $("#txtUser").val("");
     $("#txtMachineCode").val("");
     $("#txtDisplayMachineCode").val("");
     $("#selectPurpose").val("");
@@ -294,11 +320,14 @@ $("#btnScanUserQR2").click(function(){
 });
 
 $("#liViewHistoryLogs").click(function(){
+    // operation.EmptyHistoryLogs();
+    // $("#table-history-logs").empty();
+    // $("#txtUser2").val("")
+    // $("#txtDisplayUser2").val("");
+    
+    let rfid = main.SetLoginRFID();
 
-    operation.EmptyHistoryLogs();
-    $("#table-history-logs").empty();
-    $("#txtUser2").val("")
-    $("#txtDisplayUser2").val("");
+    operation.DisplayMachineLogsRecordsByUser("#table-history-logs", rfid);
 
 });
 
@@ -324,6 +353,22 @@ $("#btnCheckConnection").click(function(){
             $("#displayIP").text(main.SetIP());
         })
     }, 1000);
+});
+$("#btnLogOut").click(function(){
+    Swal.fire({
+        title: 'Logout',
+        text: 'Are you sure you want to logout?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, logout!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            main.LogOutUser();
+            location.assign("login.html");
+        }
+    })
 });
 
 
