@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.bossvilog.om" version="1.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="io.bossvilog.om" version="1.0.3" android-versionCode="10003" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>OM</name>
     <description>Sample Apache Cordova App</description>
     <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
         Apache Cordova Team
-    </author> .2
+    </author>
     <content original-src="login.html" src="http://localhost/login.html" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

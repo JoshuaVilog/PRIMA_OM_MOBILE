@@ -23,15 +23,18 @@ class Operation extends Main {
         let options = '<option value="">-SELECT-</option>';
 
         for(let index = 0; index < list.length; index++){
-            let selected = "";
-            if(id != undefined && list[index].RID == id){
-                selected = "selected";
-            }
-            options += '<option value="'+list[index].RID+'" '+selected+'>'+list[index].PURPOSE_DESC+'</option>';
+            if(list[index].DELETED_AT == null){
+                let selected = "";
 
+                if(id != undefined && list[index].RID == id){
+                    selected = "selected";
+                }
+                options += '<option value="'+list[index].RID+'" '+selected+'>'+list[index].PURPOSE_DESC+'</option>';
+            }
         }
 
         selectElem.html(options);
+        selectElem.select2({});
     }
     PopulateMachine(selectElem, id){
         let list = JSON.parse(localStorage.getItem(this.lsMachineList));
@@ -54,7 +57,7 @@ class Operation extends Main {
         let self = this;
 
         $.ajax({
-            url: self.root + "php/controllers/Machine/CheckMachineLog.php",
+            url: self.root + "php/controllers/Machine/CheckMachineLogv10003.php",
             method: "POST",
             data: {
                 machine: operation.machineCode,
@@ -68,7 +71,7 @@ class Operation extends Main {
             error: function(err){
                 console.log("Error:"+JSON.stringify(err));
                 callback({rid: 0, status: ""})
-                alert("Access Denied: You are not connected to the company Wi-Fi.");
+                alert("Access Denied: Kindly seek assistance from the MIS Department.");
             },
         });
     }
@@ -114,7 +117,7 @@ class Operation extends Main {
                 },
                 error: function(err){
                     console.log("Error:"+JSON.stringify(err));
-                    alert("Access Denied: You are not connected to the company Wi-Fi.");
+                    alert("Access Denied: Kindly seek assistance from the MIS Department.");
                     callback(false)
                 },
             });
@@ -154,7 +157,7 @@ class Operation extends Main {
             },
             error: function(err){
                 console.log("Error:"+JSON.stringify(err));
-                alert("Access Denied: You are not connected to the company Wi-Fi.");
+                alert("Access Denied: Kindly seek assistance from the MIS Department.");
             },
         });
     }
@@ -227,7 +230,7 @@ class Operation extends Main {
             },
             error: function(err){
                 console.log("Error:"+JSON.stringify(err));
-                alert("Access Denied: You are not connected to the company Wi-Fi.");
+                alert("Access Denied: Kindly seek assistance from the MIS Department.");
             },
         });
     }
